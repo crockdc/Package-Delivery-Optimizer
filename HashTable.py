@@ -6,7 +6,7 @@ class HashTable:
     def createBuckets(self):
         return [[] for _ in range(self.size)]
 
-    def setVal(self, key, val):
+    def insert(self, key, val):
         hashedKey = hash(key) % self.size
 
         bucket = self.hashTable[hashedKey]
@@ -42,3 +42,7 @@ class HashTable:
 
     def __str__(self):
         return "".join(str(item) for item in self.hashTable)
+
+    def returnValues(self):
+        for i in range(self.size):
+            print(self.hashTable[i])

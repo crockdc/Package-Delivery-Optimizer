@@ -45,4 +45,7 @@ class HashTable:
 
     def returnValues(self):
         for i in range(self.size):
-            print(self.hashTable[i])
+            for index, record in enumerate(self.hashTable[i]):
+                key, value = record
+                print(value)
+

@@ -18,9 +18,15 @@ class Package:
             self.delivery_city + " " + str(self.delivery_zip) + " " + str(self.weight) + " " + self.delivery_status \
             + " " + str(self.delivery_time)
 
-    def setDeliveryTime(self, time):
-        self.delivery_time = time
+    def getDeliveryStatus(self):
+        return self.delivery_status
+
+    def getDeliveryAddress(self):
+        return self.delivery_address
 
     def setDeliveryStatus(self, status):
         self.delivery_status = status
+
+    def setDeliveryTime(self, timestamp):
+        self.delivery_time = timestamp
 

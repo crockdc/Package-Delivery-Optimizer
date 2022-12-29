@@ -30,3 +30,9 @@ class Package:
     def setDeliveryTime(self, timestamp):
         self.delivery_time = timestamp
 
+    def setDeliveryAddress(self, address):
+        self.delivery_address = address
+
+    def setZipCode(self, zipCode):
+        self.delivery_zip = zipCode
+

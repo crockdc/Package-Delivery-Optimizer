@@ -1,31 +1,53 @@
 from HashTable import *
-from Package import *
 from Truck import *
 
 import datetime
 import csv
-import time
 
+# =========================================================================================
+
+# 1 = run entire route, 2 = pick a time and see all packages at given time
+# 3 = pick a time and a package
+# Variable initialized for keyboard selections in within the console interface.
+userMenuChoices = 0
+# Variable for which package the user wants to retrieve information on.
+userPackageChoice = 0
+# Variable initialized for the time that a user enters.
+userTimeInput = datetime.datetime(2000, 1, 1)
+# Counters initialized for loading the trucks once their conditions are met.
+truck2LoadCounter, truck3LoadCounter = 0, 0
+# Counter initialized for package #9 address change notification at 10:20am.
+addressChangeCounter = 0
+# Packages delivered counters initialized.
 packagesDelivered1, packagesDelivered2, packagesDelivered3 = 0, 0, 0
-# 3 empty lists to load the packages into for each of the trucks
+# 3 empty lists to load the packages into for each of the trucks.
 truckLoad1, truckLoad2, truckLoad3 = [], [], []
-# Create an empty dictionary for the distances between addresses
+# Create an empty dictionary for the distances between addresses.
 distanceDictionary = {}
-# # Create an empty dictionary to reference each address to a numerical value
+# # Create an empty dictionary to reference each address to a numerical value.
 addressDictionary = {}
-# # Initialize number of addresses
+# # Initialize number of addresses.
 totalAddresses = 0
-# addressRows = 0
-# Initialize a selection variable for the user interface
+# Initialize a selection variable for the user interface.
 userSelection = 0
-# Initialize initial mileage to 0
+# Initialize initial mileage to 0.
 totalMileage = 0
-# Initialize today's date and the start time of 08:00 hours
+# Initialize today's date and the start time of 08:00 hours.
 currentDate = datetime.date.today()
 currentTime = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 8)
-# Instantiate a chaining hash table of 10 buckets
+# Instantiate a chaining hash table of 41 buckets.
 table = HashTable(41)
 
+# =====================================================================================================================
+print("Welcome to the WGU UPS Package Delivery interface".center(100))
+print("How would you like to proceed? Choose a number, then press ENTER:\n".center(100))
+print("Option 1) Run through the entire delivery route and see all the packages at the end of the day.\n")
+print("Option 2) To input a time and receive the status of all packages at the selected time.\n")
+print("Option 3) To input a time followed by a package to receive information about a specific package at the"
+      " specified time.\n")
+print("Option 4) EXIT the program.\n")
+userMenuChoices = int(input())
+# if userMenuChoices == 1:
 # Utilize CSV reader and iterate through each row of the distance table file.
 with open('DistanceTable.csv', encoding='utf-8-sig') as csvfile:
     # Count the number of addresses in the first row to assist with assigning numerical values to them.
@@ -49,17 +71,11 @@ with open('DistanceTable.csv', encoding='utf-8-sig') as csvfile:
         # Iterate j by 1.
         j += 1
 
-# print(addressDictionary)
-# tempList = distanceDictionary.get('4001 South 700 East')
-# print(tempList)
-# print(distanceDictionary)
-
 # Utilize CSV reader and iterate through each row of the packages file.
 with open('PackageFile.csv', encoding='utf-8-sig') as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     # Using for loop, instantiate a new package object for each row.
     for row in readCSV:
-        # print(row[0])
         csvPackageID = row[0]
         csvPackageAddress = row[1]
         csvPackageCity = row[2]
@@ -68,17 +84,20 @@ with open('PackageFile.csv', encoding='utf-8-sig') as csvfile:
         csvPackageWeight = row[6]
         package = Package(csvPackageID, csvPackageAddress, csvPackageDeadline, csvPackageCity,
                           csvPackageZip, csvPackageWeight, "At the hub")
-        # print(package.packageID)
         table.insert(package.packageID, package)
 
-# Load each truck manually using a list for each truck.
+# Load each truck manually using a list of package objects for each truck.
 truckLoad1.extend([table.getVal(1), table.getVal(4), table.getVal(13), table.getVal(14), table.getVal(15),
-                   table.getVal(16), table.getVal(19), table.getVal(20), table.getVal(21), table.getVal(34),
-                   table.getVal(39), table.getVal(40)])
+                   table.getVal(16), table.getVal(19), table.getVal(20), table.getVal(21), table.getVal(29),
+                   table.getVal(30), table.getVal(34), table.getVal(37), table.getVal(39), table.getVal(40)])
 
-truckLoad2.extend([table.getVal(2), table.getVal(6), table.getVal(17), table.getVal(22), table.getVal(25),
+truckLoad2.extend([table.getVal(2), table.getVal(3), table.getVal(5), table.getVal(7), table.getVal(8), table.getVal(9),
+                   table.getVal(10), table.getVal(11), table.getVal(12), table.getVal(18), table.getVal(23),
+                   table.getVal(24), table.getVal(33), table.getVal(36), table.getVal(38)])
+
+truckLoad3.extend([table.getVal(6), table.getVal(17), table.getVal(22), table.getVal(25),
                    table.getVal(26), table.getVal(27), table.getVal(28), table.getVal(31), table.getVal(32),
-                   table.getVal(33), table.getVal(35)])
+                   table.getVal(35)])
 
 # Instantiate Each truck
 truck1 = Truck(1, truckLoad1, 0, 0, 0, "4001 South 700 East", None, False)
@@ -87,9 +106,6 @@ truck3 = Truck(3, truckLoad3, 0, 0, 0, "4001 South 700 East", None, False)
 
 # Set status as En route after loading onto truck1.
 for i in truckLoad1:
-    i.setDeliveryStatus("En route")
-
-for i in truckLoad2:
     i.setDeliveryStatus("En route")
 
 # move this down into the algorithm once the exact time is figured out for pack#
@@ -101,26 +117,30 @@ truck3.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictiona
 
 # While the truck route is incomplete, continue to iterate through time.
 # Iterate through time via seconds. Distance traveled is approximately 0.005 miles per second(Based on 18mph).
-while not truck1.routeComplete and not truck2.routeComplete:  # and not truck3.routeComplete
+# while not truck1.routeComplete and not truck2.routeComplete:  # and not truck3.routeComplete
+for b in range(28800):
     # Iterate by seconds using timedelta.
     currentTime += timedelta(0, 1)
+    # Check to see if current time is 10:20 to change package address of package #9.
+    if addressChangeCounter == 0 and \
+            currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 20):
+        addressChangeCounter = 1
+        package9 = table.getVal(9)
+        package9.setDeliveryAddress("410 S State St")
+        package9.setZipCode("84111")
+
+    # =================================================================================================================
+    # Truck 1 begins at 08:00 hours
+    # =================================================================================================================
     truck1RouteComplete = truck1.getRouteComplete()
     if not truck1RouteComplete:
         truck1.setTempMiles(truck1.tempMileage + 0.005)
         truck1.setTotalMiles(truck1.totalMileage + 0.005)
-    # ============================================================================================
-    # Truck 1 begins at 08:00 hours
-    # ============================================================================================
     if truck1.nextLocation == "4001 South 700 East" and truck1.neededMileage <= truck1.tempMileage and \
             not truck1RouteComplete:
         truck1.setRouteComplete(True)
-        print(truck1.currentLocation)
         truck1.setCurrentLocation("4001 South 700 East")
-        print(currentTime)
-        print(truck1.totalMileage)
-        print(truck1.nextLocation)
-        package = table.getVal(15)
-        print(package)
+        print(str(currentTime) + "Truck 1")
         totalMileage += truck1.totalMileage
     elif truck1.neededMileage <= truck1.tempMileage:
         packagesDelivered1 += 1
@@ -132,40 +152,70 @@ while not truck1.routeComplete and not truck2.routeComplete:  # and not truck3.r
             truck1.returnToHub(distanceDictionary, addressDictionary)
         else:
             truck1.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
-    # ============================================================================================
-    # Truck 2 begins at
-    # ============================================================================================
-    truck2RouteComplete = truck2.getRouteComplete()
-    if not truck2RouteComplete:
-        truck2.setTempMiles(truck2.tempMileage + 0.005)
-        truck2.setTotalMiles(truck2.totalMileage + 0.005)
-    if truck2.nextLocation == "4001 South 700 East" and truck2.neededMileage <= truck2.tempMileage and \
-            not truck2RouteComplete:
-        truck2.setRouteComplete(True)
-        print(truck2.currentLocation)
-        truck2.setCurrentLocation("4001 South 700 East")
-        print(currentTime)
-        print(truck2.totalMileage)
-        print(truck2.nextLocation)
-        # package = table.getVal(15)
-        # print(package)
-        totalMileage += truck2.totalMileage
-    elif truck2.neededMileage <= truck2.tempMileage:
-        packagesDelivered2 += 1
-        for k in truck2.getUndeliveredLoad():
-            if truck2.nextLocation == k.getDeliveryAddress():
-                k.setDeliveryStatus("Delivered")
-                k.setDeliveryTime(currentTime)
-        if len(truck2.load) == packagesDelivered2:
-            truck2.returnToHub(distanceDictionary, addressDictionary)
-        else:
-            truck2.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
+
+    # =================================================================================================================
+    # Truck 2 begins at 10:20 at the earliest, but must wait for Truck1 to return due to needing a driver.
+    # =================================================================================================================
+    if currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 20) and \
+            truck1.routeComplete:
+        if truck2LoadCounter == 0:
+            truck2LoadCounter = 1
+            # Truck is now en route, change all loaded packages to "En route" status.
+            for i in truckLoad2:
+                i.setDeliveryStatus("En route")
+        truck2RouteComplete = truck2.getRouteComplete()
+        if not truck2RouteComplete:
+            truck2.setTempMiles(truck2.tempMileage + 0.005)
+            truck2.setTotalMiles(truck2.totalMileage + 0.005)
+        if truck2.nextLocation == "4001 South 700 East" and truck2.neededMileage <= truck2.tempMileage and \
+                not truck2RouteComplete:
+            truck2.setRouteComplete(True)
+            truck2.setCurrentLocation("4001 South 700 East")
+            print(str(currentTime) + "Truck 2")
+            totalMileage += truck2.totalMileage
+        elif truck2.neededMileage <= truck2.tempMileage:
+            packagesDelivered2 += 1
+            for k in truck2.getUndeliveredLoad():
+                if truck2.nextLocation == k.getDeliveryAddress():
+                    k.setDeliveryStatus("Delivered")
+                    k.setDeliveryTime(currentTime)
+            if len(truck2.load) == packagesDelivered2:
+                truck2.returnToHub(distanceDictionary, addressDictionary)
+            else:
+                truck2.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
+
+    # =================================================================================================================
+    # Truck 3 begins at 9:05am.
+    # =================================================================================================================
+    if currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 9, 5):
+        truck3RouteComplete = truck3.getRouteComplete()
+        if truck3LoadCounter == 0:
+            truck3LoadCounter = 1
+            # Truck is now en route, change all loaded packages to "En route" status.
+            for i in truckLoad3:
+                i.setDeliveryStatus("En route")
+        if not truck3RouteComplete:
+            truck3.setTempMiles(truck3.tempMileage + 0.005)
+            truck3.setTotalMiles(truck3.totalMileage + 0.005)
+        if truck3.nextLocation == "4001 South 700 East" and truck3.neededMileage <= truck3.tempMileage and \
+                not truck3RouteComplete:
+            truck3.setRouteComplete(True)
+            truck3.setCurrentLocation("4001 South 700 East")
+            print(str(currentTime) + "Truck 3")
+            totalMileage += truck3.totalMileage
+        elif truck3.neededMileage <= truck3.tempMileage:
+            packagesDelivered3 += 1
+            for m in truck3.getUndeliveredLoad():
+                if truck3.nextLocation == m.getDeliveryAddress():
+                    m.setDeliveryStatus("Delivered")
+                    m.setDeliveryTime(currentTime)
+            if len(truck3.load) == packagesDelivered3:
+                truck3.returnToHub(distanceDictionary, addressDictionary)
+            else:
+                truck3.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
 
 
-print(table.returnValues())
 
-# print("Welcome to the WGU UPS Package Delivery interface.\n"
-#       "How would you like to proceed?\n\n"
 #       "Enter 1 to run the program from start to finish. You will receive information "
 #       "on each of the 40 packages and the total mileage to complete the deliveries for the day.\n\n"
 #       "Enter 2 to enter a specific time and receive all package and mileage information at the"
@@ -202,3 +252,6 @@ print(table.returnValues())
 #     nowTime = datetime.datetime.now()
 #     time.sleep(2)
 # print("delivered, it is now correct time")
+
+# table.returnValues()
+# print(totalMileage)

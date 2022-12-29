@@ -17,6 +17,8 @@ userMenuChoices = 0
 userPackageChoice = 0
 # Variable initialized for the time that a user enters.
 userTimeInput = datetime.datetime(2000, 1, 1)
+# Variable for status check time stamp for second and third menu options.
+userStatusCheckTime = datetime.datetime(2000, 1, 1)
 # =====================================================================================================================
 print("")
 print("Welcome to the WGU UPS Package Delivery interface".center(100))
@@ -25,19 +27,53 @@ print("Option 1) Run through the entire delivery route and see all the packages 
 print("Option 2) To input a time and receive the status of all packages at the selected time.\n")
 print("Option 3) To input a time followed by a package number to receive information about a specific package at the"
       " specified time.\n")
-print("Option 4) EXIT the program.\n")
-userMenuChoices = int(input())
+print("Option 4) EXIT the program.")
+while userMenuChoices < 1 or userMenuChoices > 4:
+    try:
+        userMenuChoices = int(input())
+        if userMenuChoices > 4 or userMenuChoices < 1:
+            raise ValueError
+    except (Exception,):
+        print("Please enter a value between 1 and 4 then press ENTER:")
+        pass
 if userMenuChoices == 1:
     userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 17)
 elif userMenuChoices == 2:
-    userTimeString = input("What time would you like to specify? Enter time in HH:MM\n")
-    hr, minute = [int(i) for i in userTimeString.split(":")]
-    userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+    print("What time would you like to specify? Enter time in format HH:MM then press ENTER:")
+    userTimeInput = datetime.datetime(2000, 1, 1)
+    while userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+        try:
+            userTimeString = input()
+            hr, minute = [int(i) for i in userTimeString.split(":")]
+            userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+            userStatusCheckTime = userTimeInput
+            if userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+                raise ValueError
+        except (Exception,):
+            print("Please enter a time after 08:00am in the proper format HH:MM then press ENTER:")
 elif userMenuChoices == 3:
-    userTimeString = input("What time would you like to specify? Enter time in HH:MM\n")
-    hr, minute = [int(i) for i in userTimeString.split(":")]
-    userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
-    userPackageChoice = int(input("Please enter a package ID number:\n"))
+    print("What time would you like to specify? Enter time in format HH:MM then press ENTER:")
+    userTimeInput = datetime.datetime(2000, 1, 1)
+    while userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+        try:
+            userTimeString = input()
+            hr, minute = [int(i) for i in userTimeString.split(":")]
+            userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+            userStatusCheckTime = userTimeInput
+            if userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+                raise ValueError
+        except (Exception,):
+            print("Please enter a time after 08:00am in the proper format HH:MM then press ENTER:")
+    userPackageChoice = 0
+    print("Please enter a package ID number then press ENTER:")
+    while userPackageChoice < 1 or userPackageChoice > 40:
+        try:
+            userPackageChoice = int(input())
+            if userPackageChoice < 1 or userPackageChoice > 40:
+                raise ValueError
+        except (Exception,):
+            print("Please enter a value between 1 and 40 then press ENTER:")
+            pass
 elif userMenuChoices == 4:
     quit()
 while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
@@ -230,7 +266,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
         if truck1RouteComplete and truck2.getRouteComplete() and truck3.getRouteComplete():
             userTimeInput = currentTime
     if userMenuChoices == 1:
-        # Display all packages either at the end of day(#1) or at the specified time(#2)
+        # Display all packages either at the end of day.
         print("Truck 1 delivered the following packages:\n")
         print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Delivery Information")
         for i in truck1.load:
@@ -251,51 +287,122 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
             print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
                   i.delivery_status + " to " + i.delivery_address + ", " + i.delivery_city + " " +
                   i.delivery_zip + " at " + str(i.delivery_time))
-
-        print("\nAll packages were delivered on time.")
-        print("Time that all trucks returned to the hub: " + str(currentTime))
-        # Display the total mileage traveled by all the trucks.
-        totalMileage = truck1.totalMileage + truck2.totalMileage + truck3.totalMileage
-        print("\nTruck 1 mileage: " + str("{0:.3f}".format(truck1.totalMileage)))
-        print("Truck 2 mileage: " + str("{0:.3f}".format(truck2.totalMileage)))
-        print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
-        print("\nTotal mileage traveled by all trucks after returning to the hub: " + str("{0:.3f}".format(totalMileage)))
-    elif userMenuChoices == 2:
-        # Display all packages either at the specified time(#2)
-        print(table.returnValues())
-        print("Time of this status check: " + str(currentTime))
+        print("\nAll packages delivered on time and all trucks returned to the hub at: " + str(currentTime) + ".\n")
         # Display the total mileage traveled by all the trucks.
         totalMileage = truck1.totalMileage + truck2.totalMileage + truck3.totalMileage
         print("Truck 1 mileage: " + str("{0:.3f}".format(truck1.totalMileage)))
         print("Truck 2 mileage: " + str("{0:.3f}".format(truck2.totalMileage)))
         print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
-        print("Total mileage traveled by all trucks at specified time: " + str("{0:.3f}".format(totalMileage)))
+        print("\nTotal mileage traveled by all trucks after returning to the hub: " + str("{0:.3f}".format(totalMileage)))
+    elif userMenuChoices == 2:
+        # Display all packages either at the specified time.
+        print("Truck 1 load status:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Status".ljust(11) +
+              "Status Timestamp".ljust(20) + "Delivery Address")
+        for i in truck1.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status.ljust(11) + str(i.delivery_time).ljust(20) + i.delivery_address +
+                  ", " + i.delivery_city + " " + i.delivery_zip)
+
+        print("\nTruck 2 load status:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Status".ljust(11) +
+              "Status Timestamp".ljust(20) + "Delivery Address")
+        for i in truck2.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status.ljust(11) + str(i.delivery_time).ljust(20) + i.delivery_address +
+                  ", " + i.delivery_city + " " + i.delivery_zip)
+
+        print("\nTruck 3 load status:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Status".ljust(11) +
+              "Status Timestamp".ljust(20) + "Delivery Address")
+        for i in truck3.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status.ljust(11) + str(i.delivery_time).ljust(20) + i.delivery_address +
+                  ", " + i.delivery_city + " " + i.delivery_zip)
+        print("\nTime of this status check: " + str(userStatusCheckTime) + ".\n")
+        if currentTime < userStatusCheckTime:
+            print("All packages delivered on time and all trucks returned to the hub at: " + str(currentTime) + ".")
+        else:
+            # Truck 1 status.
+            atHubCounter = 0
+            enRouteCounter = 0
+            for i in truck1.load:
+                if i.delivery_status == "At the hub":
+                    atHubCounter += 1
+                elif i.delivery_status == "En route":
+                    enRouteCounter += 1
+            if atHubCounter > 0:
+                print("Truck 1 is at the hub awaiting dispatch.")
+            elif enRouteCounter > 0:
+                print("Truck 1 is currently at " + truck1.currentLocation + " and is en route to " +
+                      truck1.nextLocation + ".")
+            else:
+                print("Truck 1 has completed the route.")
+            # Truck 2 status.
+            atHubCounter = 0
+            enRouteCounter = 0
+            for i in truck2.load:
+                if i.delivery_status == "At the hub":
+                    atHubCounter += 1
+                elif i.delivery_status == "En route":
+                    enRouteCounter += 1
+            if atHubCounter > 0:
+                print("Truck 2 is at the hub awaiting dispatch.")
+            elif enRouteCounter > 0:
+                print("Truck 2 is currently at " + truck2.currentLocation + " and is en route to " +
+                      truck2.nextLocation + ".")
+            else:
+                print("Truck 2 has completed the route.")
+            # Truck 3 status.
+            atHubCounter = 0
+            enRouteCounter = 0
+            for i in truck3.load:
+                if i.delivery_status == "At the hub":
+                    atHubCounter += 1
+                elif i.delivery_status == "En route":
+                    enRouteCounter += 1
+            if atHubCounter > 0:
+                print("Truck 3 is at the hub awaiting dispatch.")
+            elif enRouteCounter > 0:
+                print("Truck 3 is currently at " + truck3.currentLocation + " and is en route to " +
+                      truck3.nextLocation + ".")
+            else:
+                print("Truck 3 has completed the route.")
+
+        # Display the total mileage traveled by all the trucks.
+        totalMileage = truck1.totalMileage + truck2.totalMileage + truck3.totalMileage
+        print("\nTruck 1 mileage: " + str("{0:.3f}".format(truck1.totalMileage)))
+        print("Truck 2 mileage: " + str("{0:.3f}".format(truck2.totalMileage)))
+        print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
+        print("\nTotal mileage traveled by all trucks at specified time: " + str("{0:.3f}".format(totalMileage)))
     elif userMenuChoices == 3:
         package = table.getVal(userPackageChoice)
-        print("Time of this status check: " + str(currentTime))
+        print("\nTime of this status check: " + str(userStatusCheckTime))
+        if currentTime < userStatusCheckTime:
+            print("All packages delivered on time and all trucks returned to the hub at: " + str(currentTime))
         for i in trucksList:
             for j in i.load:
                 if j.packageID == int(userPackageChoice):
                     if j.getDeliveryStatus() == "Delivered":
-                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                        print("\nPackage #" + str(userPackageChoice) + " weighs " + j.weight +
                               "kg and was delivered to " + j.delivery_address + ", " +
                               j.delivery_city + " " + j.delivery_zip + " by Truck #" + str(i.truckID) +
                               " at " + str(j.delivery_time) + ".")
-                        print("The deadline of this package is " + j.delivery_deadline + ".")
+                        print("\nThe deadline of this package is " + j.delivery_deadline + ".\n")
                     elif j.getDeliveryStatus() == "En route":
-                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                        print("\nPackage #" + str(userPackageChoice) + " weighs " + j.weight +
                               "kg, is currently at " + str(i.currentLocation) + " on Truck #" + str(i.truckID) +
                               " and is en route to " + str(i.nextLocation) + ".")
-                        print("The final destination for this package is " + j.delivery_address + ", " +
+                        print("\nThe final destination for this package is " + j.delivery_address + ", " +
                               j.delivery_city + " " + j.delivery_zip + " with a deadline of " +
                               j.delivery_deadline + ".")
-                        print("The package was placed en route at " + str(j.delivery_time) + ".")
+                        print("The package was placed en route at " + str(j.delivery_time) + ".\n")
                     elif j.getDeliveryStatus() == "At the hub":
-                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                        print("\nPackage #" + str(userPackageChoice) + " weighs " + j.weight +
                               "kg and is at the hub on Truck #" + str(i.truckID) + ".")
-                        print("The final destination for this package is " + j.delivery_address + ", " +
+                        print("\nThe final destination for this package is " + j.delivery_address + ", " +
                               j.delivery_city + " " + j.delivery_zip + " with a deadline of " +
-                              j.delivery_deadline + ".")
+                              j.delivery_deadline + ".\n")
 
     print("\nHow would you like to proceed? Choose a number, then press ENTER:\n".center(100))
     print("Option 1) Run through the entire delivery route and see all the packages at the end of the day.\n")
@@ -303,24 +410,53 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
     print("Option 3) To input a time followed by a package to receive information about a specific package at the"
           " specified time.\n")
     print("Option 4) EXIT the program.\n")
-    try:
-        userMenuChoices = int(input())
-    except:
-        print("Faled")
-        #userMenuChoices = int("Please enter a value between 1-4 and press ENTER")
-    while userMenuChoices > 4 or userMenuChoices < 1:
-        userMenuChoices = int("Please enter a value between 1-4 and press ENTER")
+    userMenuChoices = 0
+    while userMenuChoices < 1 or userMenuChoices > 4:
+        try:
+            userMenuChoices = int(input())
+            if userMenuChoices > 4 or userMenuChoices < 1:
+                raise ValueError
+        except (Exception,):
+            print("Please enter a value between 1 and 4 then press ENTER")
+            pass
     if userMenuChoices == 1:
         userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 17)
     elif userMenuChoices == 2:
-        userTimeString = input("What time would you like to specify? Enter time in HH:MM\n")
-        hr, minute = [int(i) for i in userTimeString.split(":")]
-        userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+        print("What time would you like to specify? Enter time in format HH:MM then press ENTER:")
+        userTimeInput = datetime.datetime(2000, 1, 1)
+        while userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+            try:
+                userTimeString = input()
+                hr, minute = [int(i) for i in userTimeString.split(":")]
+                userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+                userStatusCheckTime = userTimeInput
+                if userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+                    raise ValueError
+            except (Exception,):
+                print("Please enter a time after 08:00am in the proper format HH:MM then press ENTER:")
     elif userMenuChoices == 3:
-        userTimeString = input("What time would you like to specify? Enter time in HH:MM\n")
-        hr, minute = [int(i) for i in userTimeString.split(":")]
-        userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
-        userPackageChoice = int(input("Please enter a package ID number:\n"))
+        print("What time would you like to specify? Enter time in format HH:MM then press ENTER:")
+        userTimeInput = datetime.datetime(2000, 1, 1)
+        while userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+            try:
+                userTimeString = input()
+                hr, minute = [int(i) for i in userTimeString.split(":")]
+                userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, hr, minute)
+                userStatusCheckTime = userTimeInput
+                if userTimeInput < datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 7, 59, 59):
+                    raise ValueError
+            except (Exception,):
+                print("Please enter a time after 08:00am in the proper format HH:MM then press ENTER:")
+        userPackageChoice = 0
+        print("Please enter a package ID number then press ENTER:")
+        while userPackageChoice < 1 or userPackageChoice > 40:
+            try:
+                userPackageChoice = int(input())
+                if userPackageChoice < 1 or userPackageChoice > 40:
+                    raise ValueError
+            except (Exception,):
+                print("Please enter a value between 1 and 40 then press ENTER:")
+                pass
     elif userMenuChoices == 4:
         quit()
 

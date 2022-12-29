@@ -1,3 +1,6 @@
+# Daniel Crocker - Student ID: 010301135
+# C950 - Data Structures and Algorithms II
+
 from HashTable import *
 from Truck import *
 
@@ -110,10 +113,12 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                        table.getVal(26), table.getVal(27), table.getVal(28), table.getVal(31), table.getVal(32),
                        table.getVal(35)])
 
-    # Instantiate Each truck
+    # Instantiate each truck and add to a list to be used to find the status of a package later.
+    trucksList = []
     truck1 = Truck(1, truckLoad1, 0, 0, 0, "4001 South 700 East", None, False)
     truck2 = Truck(2, truckLoad2, 0, 0, 0, "4001 South 700 East", None, False)
     truck3 = Truck(3, truckLoad3, 0, 0, 0, "4001 South 700 East", None, False)
+    trucksList.extend([truck1, truck2, truck3])
 
     # move this down into the algorithm once the exact time is figured out for pack#
 
@@ -131,11 +136,12 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
             # Set status as En route after loading onto truck1 at start of the day 08:00am.
             for i in truckLoad1:
                 i.setDeliveryStatus("En route")
+                i.setDeliveryTime(currentTime)
         # Iterate by seconds using timedelta.
         currentTime += timedelta(0, 1)
         # Check to see if current time is 10:20 to change package address of package #9.
         if addressChangeCounter == 0 and \
-                currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 20):
+                currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 19):
             addressChangeCounter = 1
             package9 = table.getVal(9)
             package9.setDeliveryAddress("410 S State St")
@@ -151,8 +157,6 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                 not truck1RouteComplete:
             truck1.setRouteComplete(True)
             truck1.setCurrentLocation("4001 South 700 East")
-            print(str(currentTime) + "Truck 1")
-            totalMileage += truck1.totalMileage
         elif truck1.neededMileage <= truck1.tempMileage:
             packagesDelivered1 += 1
             for i in truck1.getUndeliveredLoad():
@@ -174,6 +178,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                 # Truck is now en route, change all loaded packages to "En route" status.
                 for i in truckLoad2:
                     i.setDeliveryStatus("En route")
+                    i.setDeliveryTime(currentTime)
             truck2RouteComplete = truck2.getRouteComplete()
             if not truck2RouteComplete:
                 truck2.setTempMiles(truck2.tempMileage + 0.005)
@@ -182,8 +187,6 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                     not truck2RouteComplete:
                 truck2.setRouteComplete(True)
                 truck2.setCurrentLocation("4001 South 700 East")
-                print(str(currentTime) + "Truck 2")
-                totalMileage += truck2.totalMileage
             elif truck2.neededMileage <= truck2.tempMileage:
                 packagesDelivered2 += 1
                 for k in truck2.getUndeliveredLoad():
@@ -205,6 +208,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                 # Truck is now en route, change all loaded packages to "En route" status.
                 for i in truckLoad3:
                     i.setDeliveryStatus("En route")
+                    i.setDeliveryTime(currentTime)
             if not truck3RouteComplete:
                 truck3.setTempMiles(truck3.tempMileage + 0.005)
                 truck3.setTotalMiles(truck3.totalMileage + 0.005)
@@ -212,8 +216,6 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                     not truck3RouteComplete:
                 truck3.setRouteComplete(True)
                 truck3.setCurrentLocation("4001 South 700 East")
-                print(str(currentTime) + "Truck 3")
-                totalMileage += truck3.totalMileage
             elif truck3.neededMileage <= truck3.tempMileage:
                 packagesDelivered3 += 1
                 for m in truck3.getUndeliveredLoad():
@@ -224,21 +226,90 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                     truck3.returnToHub(distanceDictionary, addressDictionary)
                 else:
                     truck3.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
-
-    if userMenuChoices == 1 or userMenuChoices == 2:
+        # End the day if all 3 trucks' routes are complete. This will change the while loop variable and timestamp it.
+        if truck1RouteComplete and truck2.getRouteComplete() and truck3.getRouteComplete():
+            userTimeInput = currentTime
+    if userMenuChoices == 1:
         # Display all packages either at the end of day(#1) or at the specified time(#2)
-        print(table.returnValues())
+        print("Truck 1 delivered the following packages:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Delivery Information")
+        for i in truck1.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status + " to " + i.delivery_address + ", " + i.delivery_city + " " +
+                  i.delivery_zip + " at " + str(i.delivery_time))
+
+        print("\nTruck 2 delivered the following packages:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Delivery Information")
+        for i in truck2.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status + " to " + i.delivery_address + ", " + i.delivery_city + " " +
+                  i.delivery_zip + " at " + str(i.delivery_time))
+
+        print("\nTruck 3 delivered the following packages:\n")
+        print("ID".ljust(3) + "Kg".ljust(3) + "Deadline".ljust(9) + "Delivery Information")
+        for i in truck3.load:
+            print(str(i.packageID).ljust(3) + i.weight.ljust(3) + i.delivery_deadline.ljust(9) +
+                  i.delivery_status + " to " + i.delivery_address + ", " + i.delivery_city + " " +
+                  i.delivery_zip + " at " + str(i.delivery_time))
+
+        print("\nAll packages were delivered on time.")
+        print("Time that all trucks returned to the hub: " + str(currentTime))
         # Display the total mileage traveled by all the trucks.
-        print("Total Mileage: " + str(totalMileage))
+        totalMileage = truck1.totalMileage + truck2.totalMileage + truck3.totalMileage
+        print("\nTruck 1 mileage: " + str("{0:.3f}".format(truck1.totalMileage)))
+        print("Truck 2 mileage: " + str("{0:.3f}".format(truck2.totalMileage)))
+        print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
+        print("\nTotal mileage traveled by all trucks after returning to the hub: " + str("{0:.3f}".format(totalMileage)))
+    elif userMenuChoices == 2:
+        # Display all packages either at the specified time(#2)
+        print(table.returnValues())
+        print("Time of this status check: " + str(currentTime))
+        # Display the total mileage traveled by all the trucks.
+        totalMileage = truck1.totalMileage + truck2.totalMileage + truck3.totalMileage
+        print("Truck 1 mileage: " + str("{0:.3f}".format(truck1.totalMileage)))
+        print("Truck 2 mileage: " + str("{0:.3f}".format(truck2.totalMileage)))
+        print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
+        print("Total mileage traveled by all trucks at specified time: " + str("{0:.3f}".format(totalMileage)))
     elif userMenuChoices == 3:
-        print(table.getVal(userPackageChoice))
+        package = table.getVal(userPackageChoice)
+        print("Time of this status check: " + str(currentTime))
+        for i in trucksList:
+            for j in i.load:
+                if j.packageID == int(userPackageChoice):
+                    if j.getDeliveryStatus() == "Delivered":
+                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                              "kg and was delivered to " + j.delivery_address + ", " +
+                              j.delivery_city + " " + j.delivery_zip + " by Truck #" + str(i.truckID) +
+                              " at " + str(j.delivery_time) + ".")
+                        print("The deadline of this package is " + j.delivery_deadline + ".")
+                    elif j.getDeliveryStatus() == "En route":
+                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                              "kg, is currently at " + str(i.currentLocation) + " on Truck #" + str(i.truckID) +
+                              " and is en route to " + str(i.nextLocation) + ".")
+                        print("The final destination for this package is " + j.delivery_address + ", " +
+                              j.delivery_city + " " + j.delivery_zip + " with a deadline of " +
+                              j.delivery_deadline + ".")
+                        print("The package was placed en route at " + str(j.delivery_time) + ".")
+                    elif j.getDeliveryStatus() == "At the hub":
+                        print("Package #" + str(userPackageChoice) + " weighs " + j.weight +
+                              "kg and is at the hub on Truck #" + str(i.truckID) + ".")
+                        print("The final destination for this package is " + j.delivery_address + ", " +
+                              j.delivery_city + " " + j.delivery_zip + " with a deadline of " +
+                              j.delivery_deadline + ".")
+
     print("\nHow would you like to proceed? Choose a number, then press ENTER:\n".center(100))
     print("Option 1) Run through the entire delivery route and see all the packages at the end of the day.\n")
     print("Option 2) To input a time and receive the status of all packages at the selected time.\n")
     print("Option 3) To input a time followed by a package to receive information about a specific package at the"
           " specified time.\n")
     print("Option 4) EXIT the program.\n")
-    userMenuChoices = int(input())
+    try:
+        userMenuChoices = int(input())
+    except:
+        print("Faled")
+        #userMenuChoices = int("Please enter a value between 1-4 and press ENTER")
+    while userMenuChoices > 4 or userMenuChoices < 1:
+        userMenuChoices = int("Please enter a value between 1-4 and press ENTER")
     if userMenuChoices == 1:
         userTimeInput = datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 17)
     elif userMenuChoices == 2:
@@ -252,6 +323,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
         userPackageChoice = int(input("Please enter a package ID number:\n"))
     elif userMenuChoices == 4:
         quit()
+
 
 
 #       "Enter 1 to run the program from start to finish. You will receive information "
@@ -291,5 +363,5 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
 #     time.sleep(2)
 # print("delivered, it is now correct time")
 
-# table.returnValues()
+
 # print(totalMileage)

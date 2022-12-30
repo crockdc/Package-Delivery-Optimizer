@@ -395,7 +395,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                               " and is en route to " + str(i.nextLocation) + ".")
                         print("\nThe final destination for this package is " + j.delivery_address + ", " +
                               j.delivery_city + " " + j.delivery_zip + " with a deadline of " +
-                              j.delivery_deadline + ".")
+                              j.delivery_deadline + ".\n")
                         print("The package was placed en route at " + str(j.delivery_time) + ".\n")
                     elif j.getDeliveryStatus() == "At the hub":
                         print("\nPackage #" + str(userPackageChoice) + " weighs " + j.weight +

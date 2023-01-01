@@ -1,9 +1,9 @@
 from datetime import *
 
-# All trucks are loaded at the hub at 08:00am
-startTime = datetime(datetime.today().year, datetime.today().month, datetime.today().day, 8)
 
-
+# Package class allows for package objects to be instantiated manually or while reading in a CSV file automatically.
+# The delivery time uses Python's datetime library to align with the rest of the program.
+# The space and time complexity of instantiating the package object are each O(1).
 class Package:
     def __init__(self, packageID, delivery_address, delivery_deadline,
                  delivery_city, delivery_zip, weight, delivery_status):
@@ -14,13 +14,10 @@ class Package:
         self.delivery_zip = delivery_zip
         self.weight = weight
         self.delivery_status = delivery_status
-        self.delivery_time = startTime
+        # All trucks are loaded at the hub at 08:00am
+        self.delivery_time = datetime(datetime.today().year, datetime.today().month, datetime.today().day, 8)
 
-    def __str__(self):
-        return str(self.packageID) + " " + self.delivery_address + " " + self.delivery_deadline + " " + \
-            self.delivery_city + " " + str(self.delivery_zip) + " " + str(self.weight) + " " + self.delivery_status \
-            + " " + str(self.delivery_time)
-
+    # The accessors and mutators are all space and time complexities of 0(1).
     def getDeliveryStatus(self):
         return self.delivery_status
 

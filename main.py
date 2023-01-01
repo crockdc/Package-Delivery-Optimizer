@@ -137,17 +137,17 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
             table.insert(package.packageID, package)
 
     # Load each truck manually using a list of package objects for each truck.
-    truckLoad1.extend([table.getVal(1), table.getVal(4), table.getVal(13), table.getVal(14), table.getVal(15),
-                       table.getVal(16), table.getVal(19), table.getVal(20), table.getVal(21), table.getVal(29),
-                       table.getVal(30), table.getVal(34), table.getVal(37), table.getVal(39), table.getVal(40)])
+    truckLoad1.extend([table.lookup(1), table.lookup(4), table.lookup(13), table.lookup(14), table.lookup(15),
+                       table.lookup(16), table.lookup(19), table.lookup(20), table.lookup(21), table.lookup(29),
+                       table.lookup(30), table.lookup(34), table.lookup(37), table.lookup(39), table.lookup(40)])
 
-    truckLoad2.extend([table.getVal(2), table.getVal(3), table.getVal(5), table.getVal(7), table.getVal(8), table.getVal(9),
-                       table.getVal(10), table.getVal(11), table.getVal(12), table.getVal(18), table.getVal(23),
-                       table.getVal(24), table.getVal(33), table.getVal(36), table.getVal(38)])
+    truckLoad2.extend([table.lookup(2), table.lookup(3), table.lookup(5), table.lookup(7), table.lookup(8), table.lookup(9),
+                       table.lookup(10), table.lookup(11), table.lookup(12), table.lookup(18), table.lookup(23),
+                       table.lookup(24), table.lookup(33), table.lookup(36), table.lookup(38)])
 
-    truckLoad3.extend([table.getVal(6), table.getVal(17), table.getVal(22), table.getVal(25),
-                       table.getVal(26), table.getVal(27), table.getVal(28), table.getVal(31), table.getVal(32),
-                       table.getVal(35)])
+    truckLoad3.extend([table.lookup(6), table.lookup(17), table.lookup(22), table.lookup(25),
+                       table.lookup(26), table.lookup(27), table.lookup(28), table.lookup(31), table.lookup(32),
+                       table.lookup(35)])
 
     # Instantiate each truck and add to a list to be used to find the status of a package later.
     trucksList = []
@@ -179,11 +179,11 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
         if addressChangeCounter == 0 and \
                 currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 19):
             addressChangeCounter = 1
-            package9 = table.getVal(9)
+            package9 = table.lookup(9)
             package9.setDeliveryAddress("410 S State St")
             package9.setZipCode("84111")
         # =================================================================================================================
-        # Truck 1 begins at 08:00 hours
+        # Truck 1 begins at 08:00 hours.
         # =================================================================================================================
         truck1RouteComplete = truck1.getRouteComplete()
         if not truck1RouteComplete:
@@ -205,7 +205,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
                 truck1.nearestNeighborSearch(totalAddresses, distanceDictionary, addressDictionary)
 
         # =================================================================================================================
-        # Truck 2 begins at 10:20 at the earliest, but must wait for Truck1 to return due to needing a driver.
+        # Truck 2 begins at 10:20 at the earliest, but must wait for Truck 1 to return due to needing a driver.
         # =================================================================================================================
         if currentTime > datetime.datetime(currentDate.year, currentDate.month, currentDate.day, 10, 20) and \
                 truck1.routeComplete:
@@ -376,8 +376,8 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
         print("Truck 3 mileage: " + str("{0:.3f}".format(truck3.totalMileage)))
         print("\nTotal mileage traveled by all trucks at specified time: " + str("{0:.3f}".format(totalMileage)))
     elif userMenuChoices == 3:
-        package = table.getVal(userPackageChoice)
-        print("\nTime of this status check: " + str(userStatusCheckTime))
+        package = table.lookup(userPackageChoice)
+        print("\nTime of this status check: " + str(userStatusCheckTime) + ".")
         if currentTime < userStatusCheckTime:
             print("All packages delivered on time and all trucks returned to the hub at: " + str(currentTime))
         for i in trucksList:
@@ -460,44 +460,4 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
     elif userMenuChoices == 4:
         quit()
 
-
-
-#       "Enter 1 to run the program from start to finish. You will receive information "
-#       "on each of the 40 packages and the total mileage to complete the deliveries for the day.\n\n"
-#       "Enter 2 to enter a specific time and receive all package and mileage information at the"
-#       " time that you specify\n\nEnter 3 to enter a specific package number followed by a specific"
-#       "time to receive information about your specified package at the specified time.")
-# userSelection = int(input("\nENTER A NUMBER:"))
-# if userSelection == 1:
-#     print("you typed 1")
-
-# package1 = Package(1, "555 maple", "10:30", "Manassas", 32119, 22.1, "loaded")
-# package2 = Package(2, "543 maple", "10:00", "Port", 32128, 22.1, "loaded")
-#
-# newCurrentTime = startTime + datetime.timedelta(0, 5)
-# package1.setDeliveryTime(datetime.datetime.time(newCurrentTime))
-
-# table.insert(package1.packageID, package1)
-# table.insert(1, package2)
-
-# print(table)
-# print(table.getVal(1))
-# package = table.getVal(1)
-# print(package.delivery_address)
-# print(table.returnValues())
-
-# if __name__ == '__main__':
-
-# deliveryDate = datetime.date.today()
-# deliveryTime = datetime.datetime(deliveryDate.year,deliveryDate.month,deliveryDate.day,21,24, 30)
-# nowTime = datetime.datetime.now()
-# print(str(nowTime))
-# print(deliveryTime)
-# while nowTime < deliveryTime:
-#     print("not delivered, please wait")
-#     nowTime = datetime.datetime.now()
-#     time.sleep(2)
-# print("delivered, it is now correct time")
-
-
-# print(totalMileage)
+# Program END.

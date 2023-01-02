@@ -22,16 +22,14 @@ class Truck:
         # Once the truck has reached the hub after starting the route, the route is labeled complete.
         self.routeComplete = routeComplete
 
-    # The nearest neighbor algorithm was chosen due to the speed of time complexity which is O(n).
-    # If the load was allowed to be extremely large then it would make the time complexity O(n^2), but since it is
-    # 16 maximum packages its impact is negligible.
+    # The time complexity O(n^2) and space complexity is O(1).
     # In this usage a list is pulled from the distance dictionary created within the main.py that aligns with the
     # address of the truck's current location. Each float within the list is compared to the previous float to see
     # which has the smallest distance. Once the list of length n(total addresses) is iterated through, the shortest
     # path is chosen. Although, the chosen address must match a package currently within the truck's load AND must
     # be currently not "Delivered".
-    # The space complexity is O(n).
     def nearestNeighborSearch(self, totalAddresses, distanceDictionary, addressDictionary):
+        # Set the initial distance to a number greater than any of the distances from the distance table.
         nextAddressDistance = 20
         nextAddressIndex = 0
         routeComplete = True
@@ -69,7 +67,7 @@ class Truck:
     # miles to 0, sets the needed miles to the index 0(which is the hub) from the current location, and sets the
     # next location to the hub.
     # The time and space complexity are each O(1).
-    def returnToHub(self, distanceDictionary, addressDictionary):
+    def returnToHub(self, distanceDictionary):
         distanceList = distanceDictionary.get(self.currentLocation)
         self.setCurrentLocation(self.nextLocation)
         self.setNeededMiles(float(distanceList[0]))

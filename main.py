@@ -463,7 +463,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
         # The currentTime variable is timestamped once all packages are delivered, if the initial user input is greater
         # than the current time then the trucks must be complete with routes.
         if currentTime < userStatusCheckTime:
-            print("All packages delivered on time and all trucks returned to the hub at: " + str(currentTime))
+            print("\nAll packages delivered on time and all trucks returned to the hub at: " + str(currentTime))
         # Iterate through the truck list then through each of their loads and adjust the output accordingly.
         # Time complexity is O(n^2) and space complexity is O(n^2).
         for i in trucksList:

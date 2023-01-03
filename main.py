@@ -4,7 +4,7 @@
 # OVERVIEW: A package file with 40 packages is provided as well as a distance table of 27 addresses. The parameters are
 #   that there are 3 trucks and 2 drivers. Loading and delivering times are averaged into an overall speed of 18mph.
 #   Trucks can't leave before 08:00 hours. Certain packages have requirements that must be met. Packages must be able
-#   to be inserted and looked up via a manually created hash table. An algorith to deliver the packages must be
+#   to be inserted and looked up via a manually created hash table. An algorithm to deliver the packages must be
 #   implemented with a time and space big O complexity of no worse than O(n^2) leading to a delivery mileage of less
 #   than 140 total miles between the three trucks. This program uses the nearest neighbor algorithm for deliveries.
 # Big O: The omega time complexity for the totality of the program is O(n^2), the space complexity is the same O(n^2).
@@ -498,7 +498,7 @@ while userMenuChoices == 1 or userMenuChoices == 2 or userMenuChoices == 3:
     print("Option 2) To input a time and receive the status of all packages at the selected time.\n")
     print("Option 3) To input a time followed by a package to receive information about a specific package at the"
           " specified time.\n")
-    print("Option 4) EXIT the program.\n")
+    print("Option 4) EXIT the program.")
     userMenuChoices = 0
     while userMenuChoices < 1 or userMenuChoices > 4:
         try:

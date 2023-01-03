@@ -22,7 +22,7 @@ class Truck:
         # Once the truck has reached the hub after starting the route, the route is labeled complete.
         self.routeComplete = routeComplete
 
-    # The time complexity O(n^2) and space complexity is O(1).
+    # The time complexity O(n^2) and space complexity is O(n).
     # In this usage a list is pulled from the distance dictionary created within the main.py that aligns with the
     # address of the truck's current location. Each float within the list is compared to the previous float to see
     # which has the smallest distance. Once the list of length n(total addresses) is iterated through, the shortest
